@@ -71,7 +71,9 @@ def generate_tweets(
         # auto-post X if enabled and score high
         if getattr(config, "x_auto_post", False) and score >= getattr(config, "judge_threshold", 7):
             try:
-                from .publisher import post_to_x
+                try:
+                    from .xactions_publisher import post_via_xactions as post_to_x
+                except: from .publisher import post_to_x
                 for tw in tweets:
                     clean = tw.split("] ",1)[-1] if "] " in tw else tw
                     tid = post_to_x(clean)
@@ -144,5 +146,6 @@ def _prompt_for_approvals(tweet_count: int, auto_tweet: bool) -> dict[int, bool]
         index: typer.confirm(f"Approve tweet {index}?", prompt_suffix=" [y/n]: ")
         for index in range(1, tweet_count + 1)
     }
+
 
 
