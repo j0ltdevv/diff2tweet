@@ -37,6 +37,14 @@ custom_instructions: |
   Avoid generic phrases like "improved stability" unless the diff proves it.
   Prefer specific, punchy language that a developer would actually post.
 
+# --- DUAL STYLE PATCH ---
+judge_enabled: true
+judge_threshold: 7
+dual_mode: true
+style_viral_path: .diff2tweet/STYLE_VIRAL.md
+style_humble_path: .diff2tweet/STYLE_HUMBLE.md
+x_auto_post: false
+
 # Hashtags that should always be included when they fit naturally.
 forced_hashtags:
   - "#buildinpublic"

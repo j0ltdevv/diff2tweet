@@ -10,7 +10,8 @@ from .config import load_config
 from .git import GitDiscoveryError, InsufficientCommitsError, NoNewCommitsError, discover_git_context, find_repo_root
 from .logs import LogWriteError, current_utc_timestamp, write_approval_entry, write_run_entry
 from .notes import discover_notes
-from .prompt import build_prompt
+from .prompt import build_prompt, build_prompt_for_style
+from .judge import judge_score
 from .providers import ProviderError, get_provider
 
 app = typer.Typer(
@@ -56,8 +57,28 @@ def generate_tweets(
                 cwd=repo_root,
             )
         notes_text = discover_notes(cwd=repo_root)
-        prompt_text = build_prompt(config, git_context, notes_text)
-        tweets = get_provider(config).generate_tweets(prompt_text, config)
+        # --- PATCH DUAL + JUDGE ---
+        from diff2tweet.judge import judge_score
+        score, reason = judge_score(config, git_context)
+        typer.echo(f"Judge: {score}/10 - {reason}")
+        # dual generation
+        tweets = []
+        styles = ["viral", "humble"] if getattr(config, "dual_mode", False) else ["humble"]
+        for style in styles:
+            prompt_text = build_prompt_for_style(config, git_context, notes_text, style)
+            t = get_provider(config).generate_tweets(prompt_text, config)
+            tweets.extend([f"[{style.upper()}] {x}" for x in t])
+        # auto-post X if enabled and score high
+        if getattr(config, "x_auto_post", False) and score >= getattr(config, "judge_threshold", 7):
+            try:
+                from .publisher import post_to_x
+                for tw in tweets:
+                    clean = tw.split("] ",1)[-1] if "] " in tw else tw
+                    tid = post_to_x(clean)
+                    typer.echo(f"Posted to X: {tid}")
+            except Exception as e:
+                typer.echo(f"X post failed: {e}", err=True)
+        # -------------------------
         output_folder = repo_root / config.output_folder
         run_entry = write_run_entry(output_folder, git_context, tweets)
     except (GitDiscoveryError, LogWriteError, ProviderError, ValidationError, FileNotFoundError) as exc:
@@ -106,3 +127,4 @@ def _prompt_for_approvals(tweet_count: int, auto_tweet: bool) -> dict[int, bool]
         index: typer.confirm(f"Approve tweet {index}?", prompt_suffix=" [y/n]: ")
         for index in range(1, tweet_count + 1)
     }
+
