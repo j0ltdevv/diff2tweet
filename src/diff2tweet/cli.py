@@ -78,6 +78,23 @@ def generate_tweets(
                     typer.echo(f"Posted to X: {tid}")
             except Exception as e:
                 typer.echo(f"X post failed: {e}", err=True)
+        # --- TELEGRAM VALIDATION ---
+        if getattr(config, "telegram_enabled", False):
+            try:
+                from .telegram import send_to_telegram
+                header = f"🚀 diff2tweet {git_context.commit_range} | Judge {score}/10 - {reason}
+
+"
+                body = "
+---
+".join(tweets)
+                # ajoute les fichiers pour validation X manuelle
+                send_to_telegram(header + body + "
+
+✅ Réponds 1 ou 2 pour poster sur X")
+                typer.echo("Sent to Telegram for validation")
+            except Exception as e:
+                typer.echo(f"Telegram failed: {e}", err=True)
         # -------------------------
         output_folder = repo_root / config.output_folder
         run_entry = write_run_entry(output_folder, git_context, tweets)
@@ -127,4 +144,5 @@ def _prompt_for_approvals(tweet_count: int, auto_tweet: bool) -> dict[int, bool]
         index: typer.confirm(f"Approve tweet {index}?", prompt_suffix=" [y/n]: ")
         for index in range(1, tweet_count + 1)
     }
+
 

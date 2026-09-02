@@ -19,7 +19,11 @@ class ProviderSettings(BaseSettings):
 
     openai_api_key: SecretStr | None = Field(
         default=None,
-        validation_alias=AliasChoices("OPENAI_API_KEY"),
+        validation_alias=AliasChoices("OPENAI_API_KEY", "NVIDIA_API_KEY", "NIM_API_KEY"),
+    )
+    openai_base_url: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("OPENAI_BASE_URL", "NIM_BASE_URL"),
     )
     anthropic_api_key: SecretStr | None = Field(
         default=None,

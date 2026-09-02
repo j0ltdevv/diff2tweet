@@ -44,6 +44,8 @@ dual_mode: true
 style_viral_path: .diff2tweet/STYLE_VIRAL.md
 style_humble_path: .diff2tweet/STYLE_HUMBLE.md
 x_auto_post: false
+telegram_enabled: true
+# NIM: provider reste openai, le base_url est auto-detecte si NVIDIA_API_KEY present
 
 # Hashtags that should always be included when they fit naturally.
 forced_hashtags:
@@ -116,3 +118,4 @@ diff_ignore_patterns:
 
 # Directory where generated markdown drafts and logs should be written.
 output_folder: .diff2tweet
+

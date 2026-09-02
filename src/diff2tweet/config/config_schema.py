@@ -94,6 +94,7 @@ class DiffToTweetConfig(BaseModel):
     style_viral_path: Path = Field(default=Path(".diff2tweet/STYLE_VIRAL.md"))
     style_humble_path: Path = Field(default=Path(".diff2tweet/STYLE_HUMBLE.md"))
     x_auto_post: bool = Field(default=False)
+    telegram_enabled: bool = Field(default=False)
 
     @field_validator("forced_hashtags")
     @classmethod

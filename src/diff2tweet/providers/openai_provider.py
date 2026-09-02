@@ -23,7 +23,12 @@ class OpenAIProvider(BaseProvider):
                 "The 'openai' package is required for provider 'openai'. Install project dependencies first."
             ) from exc
 
-        client = OpenAI(api_key=api_key)
+        import os
+        base_url = os.environ.get("OPENAI_BASE_URL") or os.environ.get("NIM_BASE_URL") or os.environ.get("NVIDIA_BASE_URL")
+        # NIM endpoint par défaut si NVIDIA_API_KEY détectée
+        if not base_url and (os.environ.get("NVIDIA_API_KEY") or os.environ.get("NIM_API_KEY")):
+            base_url = "https://integrate.api.nvidia.com/v1"
+        client = OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
         tweets: list[str] = []
         for _ in range(config.num_candidates):
             response = client.chat.completions.create(
