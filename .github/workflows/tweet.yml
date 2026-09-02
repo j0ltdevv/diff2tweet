@@ -1,8 +1,8 @@
-name: Tweet on Push
+name: Tweet on Push (NIM + XActions)
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   tweet:
@@ -10,13 +10,19 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'wip')"
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 5
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: npm install -g xactions
-      - run: pip install .
-      - run: diff2tweet --force
+      - name: Setup Node + XActions
+        run: npm install -g xactions
+      - name: Install diff2tweet
+        run: pip install . requests tweepy
+      - name: Run diff2tweet (NIM -> XActions)
+        run: diff2tweet --force
         env:
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NIM_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           XACTIONS_SESSION_COOKIE: ${{ secrets.XACTIONS_SESSION_COOKIE }}
-          JUDGE_THRESHOLD: 7

@@ -2,10 +2,10 @@
 # This file is intended to live in the root of the user's repo.
 
 # LLM provider to use for tweet generation.
-provider: anthropic
+provider: openai
 
-# Model name for the selected provider.
-model: claude-sonnet-4-6
+# Model name - NIM
+model: meta/llama-3.3-70b-instruct
 
 # Small, structured context about the project for better tweet prompts.
 project_name: diff2tweet
@@ -118,4 +118,5 @@ diff_ignore_patterns:
 
 # Directory where generated markdown drafts and logs should be written.
 output_folder: .diff2tweet
+
 
