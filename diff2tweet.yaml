@@ -43,8 +43,8 @@ judge_threshold: 7
 dual_mode: true
 style_viral_path: .diff2tweet/STYLE_VIRAL.md
 style_humble_path: .diff2tweet/STYLE_HUMBLE.md
-x_auto_post: false
-telegram_enabled: true
+x_auto_post: true
+telegram_enabled: false
 # NIM: provider reste openai, le base_url est auto-detecte si NVIDIA_API_KEY present
 
 # Hashtags that should always be included when they fit naturally.
